@@ -41,10 +41,10 @@ pipeline {
                 withSonarQubeEnv('MySonarQube') {
                     sh '''
                         ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
-                          -Dsonar.projectKey=edr-automation \
+                          -Dsonar.projectKey=projet-pfe \
                           -Dsonar.sources=. \
                           -Dsonar.host.url=$SONAR_HOST_URL \
-                          -Dsonar.login=$SONAR_TOKEN \
+                          -Dsonar.login=$Sonar_Token \
                           -Dsonar.python.version=3.9 \
                           -Dsonar.python.coverage.reportPaths=coverage.xml \
                           -Dsonar.exclusions=venv/**,${VENV_DIR}/**

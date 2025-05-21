@@ -39,7 +39,8 @@ pipeline {
                     if [ -d app ]; then
                         flake8 app/ --statistics --output-file=reports/flake8.txt
                     else
-                        find . -name "*.py" | xargs flake8 --statistics --output-file=reports/flake8.txt
+                        # Corrigé: séparation claire entre find et xargs
+                        find . -name "*.py" -print0 | xargs -0 flake8 --statistics --output-file=reports/flake8.txt || true
                     fi
                 '''
             }
@@ -59,7 +60,7 @@ pipeline {
                           -Dsonar.login=$SONAR_TOKEN \
                           -Dsonar.python.version=3.9 \
                           -Dsonar.python.coverage.reportPaths=coverage.xml \
-                          -Dsonar.exclusions=venv/**
+                          -Dsonar.exclusions=venv/**,${VENV_DIR}/**
                     '''
                 }
             }

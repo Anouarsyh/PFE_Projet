@@ -4,7 +4,7 @@ pipeline {
     environment {
         VENV_DIR = 'venv'
         // Utilisez le nom exact de votre installation SonarScanner depuis Jenkins
-        SONAR_SCANNER_HOME = tool 'SonarQube Scanner' // Remplacez par le nom correct
+        SONAR_SCANNER_HOME = tool 'SonarQube' // Remplacez par le nom correct
     }
 
     stages {

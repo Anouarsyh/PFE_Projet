@@ -35,7 +35,7 @@ pipeline {
 
         stage('SAST - SonarQube Analysis') {
             environment {
-                SONAR_TOKEN = credentials('sonar-token')
+                SONAR_TOKEN = credentials('Sonar-Token')
             }
             steps {
                 withSonarQubeEnv('MySonarQube') {

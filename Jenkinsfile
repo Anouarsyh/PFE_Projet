@@ -38,7 +38,7 @@ pipeline {
                 SONAR_TOKEN = credentials('Sonar-Token')
             }
             steps {
-                withSonarQubeEnv('MySonarQube') {
+                withSonarQubeEnv('SonarScanner') {
                     sh '''
                         ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
                           -Dsonar.projectKey=projet pfe \

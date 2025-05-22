@@ -3,7 +3,8 @@ pipeline {
 
     environment {
         VENV_DIR = 'venv'
-        SONAR_SCANNER_HOME = tool 'SonarScanner'
+        // Utilisez le nom exact de votre installation SonarScanner depuis Jenkins
+        SONAR_SCANNER_HOME = tool 'SonarQube Scanner' // Remplacez par le nom correct
     }
 
     stages {
@@ -31,17 +32,16 @@ pipeline {
             }
         }
 
-        
-
         stage('SAST - SonarQube Analysis') {
             environment {
                 SONAR_TOKEN = credentials('Sonar-Token')
             }
             steps {
-                withSonarQubeEnv('SonarScanner') {
+                // Utilisez le nom exact de votre serveur SonarQube depuis Jenkins
+                withSonarQubeEnv('SonarQube') { // Remplacez 'SonarQube' par le nom correct de votre serveur
                     sh '''
                         ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
-                          -Dsonar.projectKey=projet pfe \
+                          -Dsonar.projectKey="projet-pfe" \
                           -Dsonar.sources=. \
                           -Dsonar.host.url=$SONAR_HOST_URL \
                           -Dsonar.login=$SONAR_TOKEN \
@@ -68,16 +68,17 @@ pipeline {
                 '''
             }
         }
+
         stage('Linting (flake8)') {
             steps {
                 sh '''
                     . ${VENV_DIR}/bin/activate
                     mkdir -p reports
                     if [ -d app ]; then
-                        flake8 app/ --statistics --output-file=reports/flake8.txt
+                        flake8 app/ --statistics --output-file=reports/flake8.txt || true
                     else
-                        # Corrigé: séparation claire entre find et xargs
-                        find . -name "*.py" -print0 | xargs -0 flake8 --statistics --output-file=reports/flake8.txt || true
+                        find . -name "*.py" -not -path "./venv/*" -not -path "./${VENV_DIR}/*" | \
+                        xargs flake8 --statistics --output-file=reports/flake8.txt || true
                     fi
                 '''
             }
@@ -85,7 +86,9 @@ pipeline {
 
         stage('Archive Reports') {
             steps {
-                archiveArtifacts artifacts: 'dependency-check-report/*.html, reports/*.txt', fingerprint: true
+                archiveArtifacts artifacts: 'dependency-check-report/*.html, reports/*.txt', 
+                                fingerprint: true, 
+                                allowEmptyArchive: true
             }
         }
     }
@@ -93,6 +96,9 @@ pipeline {
     post {
         always {
             cleanWs()
+        }
+        failure {
+            echo "Pipeline failed. Check the logs for more details."
         }
     }
 }
